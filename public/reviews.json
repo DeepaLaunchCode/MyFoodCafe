@@ -1,0 +1,44 @@
+[
+      {
+        "id": 1,
+        "author": "Melissa H.",
+        "photo": "melissa.jpg",        
+        "comment": "Great food and service!",
+        "rating": 5
+      },
+      {
+        "id": 2,
+        "author": "Josh B",
+        "photo": "./josh.jpg",  
+        "comment": "Loved the pizza!",
+        "rating": 5
+      },
+      {
+        "id": 3,
+        "author": "Shelvy B",
+        "photo": "./shelvy.jpg",  
+        "comment": "Good value for money.",
+        "rating": 4
+      },
+      {
+        "id": 4,
+        "author": "Darren H",
+        "photo": "./darren.jpg",  
+        "comment": "Excellent experience!",
+        "rating": 5
+      },
+      {
+        "id": 5,
+        "author": "Sean A",
+        "photo": "./sean.jpg",  
+        "comment": "The pasta was amazing.",
+        "rating": 5
+      },
+      {
+        "id": 6,
+        "author": "Carrie Jones",
+        "photo": "./carrie.jpg",  
+        "comment": "The wings are out of the world.",
+        "rating": 4
+      }
+    ]

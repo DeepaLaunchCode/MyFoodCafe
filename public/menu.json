@@ -1,0 +1,66 @@
+[
+      {
+        "id": 1,
+        "name": "Burger",
+        "description": "Delicious beef burger with cheese and fries.",
+        "price": 9.99,
+        "image": "/burger.jpg",
+        "category": "burgers"
+      },
+      {
+        "id": 2,
+        "name": "Pizza",
+        "description": "Classic Margherita pizza.",
+        "price": 12.99,
+        "image": "/pizza.jpg",
+        "category": "pizzas"
+      },
+      {
+        "id": 3,
+        "name": "Pasta",
+        "description": "Spaghetti with tomato sauce.",
+        "price": 10.99,
+        "image": "/pasta.jpg",
+        "category": "pastas"
+      },
+      {
+        "id": 4,
+        "name": "Salad",
+        "description": "Fresh garden salad.",
+        "price": 7.99,
+        "image": "/salad.jpg",
+        "category": "salads"
+      },
+      {
+        "id": 5,
+        "name": "Fries",
+        "description": "Crispy french fries.",
+        "price": 3.99,
+        "image": "/fries.jpg",
+        "category": "sides"
+      },
+      {
+        "id": 6,
+        "name": "Soda",
+        "description": "Refreshing soda.",
+        "price": 1.99,
+        "image": "/soda.jpg",
+        "category": "drinks"
+      },
+      {
+        "id": 7,
+        "name": "Chicken Wings",
+        "description": "Spicy chicken wings.",
+        "price": 11.99,
+        "image": "/wings.jpg",
+        "category": "sides"
+      },
+      {
+        "id": 8,
+        "name": "Coffee",
+        "description": "Energetic expresso.",
+        "price": 1.99,
+        "image": "/coffee.jpg",
+        "category": "drinks"
+      }
+    ]

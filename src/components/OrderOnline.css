@@ -1,0 +1,117 @@
+.order-online-container {
+      padding: 20px;
+    }
+
+    .menu-section {
+      margin-bottom: 20px;
+    }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+    }
+
+    .menu-item {
+      border: 1px solid #ccc;
+      padding: 10px;
+      border-radius: 4px;
+      text-align: center;
+    }
+
+    .menu-item button {
+      margin-top: 10px;
+      padding: 8px 15px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .order-summary {
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      padding: 15px;
+      border-radius: 4px;
+    }
+
+    .order-summary ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .order-summary li {
+      margin-bottom: 5px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .order-summary button {
+      padding: 5px 10px;
+      background-color: #f44336;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .address-form {
+      border: 1px solid #ccc;
+      padding: 15px;
+      border-radius: 4px;
+    }
+
+    .address-form div {
+      margin-bottom: 10px;
+    }
+
+    .address-form label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    .address-form input[type="text"] {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .address-form button {
+      padding: 10px 20px;
+      background-color: #008CBA;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    
+    .thank-you-message {
+      background-color: #e6ffed;
+      color: #2e7d32;
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 5px;
+      text-align: center;
+      font-weight: bold;
+    }
+    .border-red-500 {
+      border: 1px solid #ef4444;
+    }
+    .text-red-500 {
+      color: #ef4444;
+    }
+    .text-sm {
+      font-size: 0.875rem;
+    }
+    .mt-1 {
+      margin-top: 0.25rem;
+    }
+    .opacity-50 {
+      opacity: 0.5;
+    }
+    .cursor-not-allowed {
+      cursor: not-allowed;
+    }

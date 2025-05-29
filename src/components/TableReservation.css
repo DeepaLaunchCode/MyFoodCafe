@@ -1,0 +1,73 @@
+.table-reservation-container {
+      padding: 20px;
+      background-image: "./background1.jpg";
+    }
+
+    .table-reservation-container h2 {
+      margin-bottom: 10px;
+    }
+
+    .table-reservation-container form {
+      display: flex;
+      flex-direction: column;
+      max-width: 400px;
+    }
+
+    .table-reservation-container div {
+      margin-bottom: 15px;
+    }
+
+    .table-reservation-container label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    .table-reservation-container input[type="date"],
+    .table-reservation-container input[type="time"],
+    .table-reservation-container input[type="number"],
+    .table-reservation-container input[type="text"],
+    .table-reservation-container input[type="tel"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+
+    .table-reservation-container button {
+      padding: 10px 20px;
+      background-color: #008CBA;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    .border-red-500 {
+      border: 1px solid #ef4444;
+    }
+    .text-red-500 {
+      color: #ef4444;
+    }
+    .text-sm {
+      font-size: 0.875rem;
+    }
+    .mt-1 {
+      margin-top: 0.25rem;
+    }
+    .opacity-50 {
+      opacity: 0.5;
+    }
+    .cursor-not-allowed {
+      cursor: not-allowed;
+    }
+    .reserve-button {
+      background-color: #3b82f6; /* Example: blue-500 */
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 0.25rem;
+    }
+    .reserve-button:hover:not(:disabled) {
+      background-color: #2563eb; /* Example: blue-600 */
+    }
