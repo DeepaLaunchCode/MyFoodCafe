@@ -72,7 +72,7 @@ function ContactUs() {
     }
 
     // Simulate form submission
-    console.log('Form submitted:', formData);
+    console.log('Contact Form submitted:', formData);
     setIsSubmitted(true);
     setFormData({ name: '', email: '', message: '' });
     setErrors({ name: '', email: '', message: '' });

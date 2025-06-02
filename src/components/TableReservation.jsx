@@ -99,28 +99,14 @@ function TableReservation() {
     }
 
     // Simulate saving to a JSON file
-    try {
-      const response = await fetch('/reservations.json');
-      let existingReservations = [];
-      try {
-        existingReservations = await response.json();
-      } catch (error) {
-        console.warn('reservations.json is empty or invalid, starting with an empty array.');
-      }
-
-      const newReservation = { ...reservation, id: Date.now() };
-      const updatedReservations = [...existingReservations, newReservation];
-
-      console.log('Simulating saving reservation:', updatedReservations);
+         const newReservation = { ...reservation, id: Date.now() };
+      console.log('Simulating saving reservation:', newReservation);
       setReservation({ date: '', time: '', guests: 1, name: '', phone: '' });
       setIsSubmitted(true);
       setTimeout(() => {
         setIsSubmitted(false);
       }, 5000);
-    } catch (error) {
-      console.error('Error saving reservation:', error);
-      alert('Error submitting reservation.');
-    }
+   
   };
 
   return (

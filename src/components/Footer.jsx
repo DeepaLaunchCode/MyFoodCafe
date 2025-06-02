@@ -3,8 +3,8 @@ import './Footer.css';
 function Footer() {
   return (
     <footer className="footer-container">
-      <div className="container-custom">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+      <div >
+        <div>
           <div className="container-custom">
             <h3 className="text-xl font-bold mb-4 text-yellow">About myFoodCafe</h3>
             <p className="text-gray mb-4">

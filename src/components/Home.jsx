@@ -16,8 +16,8 @@ function Home() {
         <p>Our restaurant has a rich history, starting from a small family business to a renowned dining spot. We are committed to providing exceptional service and unforgettable meals.</p>
       </div>
     </div>
-    <div class="imgcontainer">
-      <img class="moving-image" loading="lazy" decoding="async" width="272" height="224" src="logo.jpg" alt="Moving Image" />
+    <div className="imgcontainer">
+      <img className="moving-image" loading="lazy" decoding="async" width="272" height="224" src="logo.jpg" alt="Moving Image" />
 </div>
   
     </>
