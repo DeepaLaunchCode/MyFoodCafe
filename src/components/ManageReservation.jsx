@@ -250,9 +250,10 @@ function ManageReservation() {
             <input type="tel" name="phone" value={editReservation.phone} onChange={handleChange} required />
             {errors.phone && <p className="text-red-500">{errors.phone}</p>}
           </div>
-
+        <div className="button-group">
           <button type="submit" disabled={isLoading}>Update</button>
           <button type="button" onClick={() => setIsEditing(false)}>Cancel</button>
+          </div>
         </form>
       ) : (
         <div className="reservation-details">
