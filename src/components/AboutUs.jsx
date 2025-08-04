@@ -1,5 +1,5 @@
 import React from 'react';
-import './AboutUs.css';
+import '../assets/css/AboutUs.css';
 
 const AboutUs = () => {
   const timelineEvents = [

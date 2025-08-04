@@ -1,17 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import './OrderOnline.css';
+import '../assets/css/OrderOnline.css';
+import { button } from 'framer-motion/client';
 
 function OrderOnline() {
   const [menuItems, setMenuItems] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [categories, setCategories] = useState([]);
+  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+ 
   const [order, setOrder] = useState({
     items: [],
-    address: {
-      street: '',
-      city: '',
-      zip: '',
+    customer: {
+      name: '',
+      email: '',
+      phone: '',
     },
     payment: {
       cardnumber: '',
@@ -19,27 +22,45 @@ function OrderOnline() {
       cvv: '',
     },
   });
-  const [showAddressForm, setShowAddressForm] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showCustomerForm, setShowCustomerForm] = useState(false);
   const [isOrderSubmitted, setIsOrderSubmitted] = useState(false);
   const [errors, setErrors] = useState({
-    street: '',
-    city: '',
-    zip: '',
+    name: '',
+    email: '',
+    phone: '',
     cardnumber: '',
     expiry: '',
     cvv: '',
   });
+  // Add a state for loading and errors for better UX
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  // State to store the successful order ID
+  const [submittedOrderId, setSubmittedOrderId] = useState(null);
+  const [isLoading, setIsLoading] = useState(false); // New loading state
 
   useEffect(() => {
     async function fetchMenu() {
       try {
-        const response = await fetch('/menu.json');
+        // --- CHANGE 1: Point to your live Spring Boot API endpoint ---
+        const response = await fetch(`${apiUrl}/api/menu`);
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
         const data = await response.json();
         setMenuItems(data);
+
+        // Extract unique categories from the API data
         const uniqueCategories = ['all', ...new Set(data.map(item => item.category))];
         setCategories(uniqueCategories);
-      } catch (error) {
-        console.error('Error fetching menu:', error);
+      } catch (e) {
+        console.error('Error fetching menu:', e);
+        setError('Failed to load menu. Please make sure the backend server is running.');
+      } finally {
+        setLoading(false);
       }
     }
     fetchMenu();
@@ -52,7 +73,7 @@ function OrderOnline() {
   const detailsRef = useRef(null);
 
   const scrollToDetails = () => {
-    detailsRef.current?.scrollIntoView({ behavior: "smooth" });
+    detailsRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   const handleAddItem = (item) => {
@@ -74,19 +95,19 @@ function OrderOnline() {
   const validateField = (name, value) => {
     let errorMsg = '';
     switch (name) {
-      case 'street':
+      case 'name':
         if (!value || value.length < 3) {
-          errorMsg = 'Street must be at least 3 characters long';
+          errorMsg = 'Name must be at least 3 characters long';
         }
         break;
-      case 'city':
-        if (!value || !/^[a-zA-Z\s-]+$/.test(value)) {
-          errorMsg = 'City must contain only letters, spaces, or hyphens';
+      case 'email':
+        if (!value || !/^\S+@\S+\.\S+$/.test(value)) {
+          errorMsg = 'Please enter a valid email address';
         }
         break;
-      case 'zip':
-        if (!/^\d{5}(-\d{4})?$/.test(value)) {
-          errorMsg = 'ZIP code must be 5 digits or 5+4 digits (e.g., 12345 or 12345-6789)';
+      case 'phone':
+        if (!/^\d{10}$/.test(value.replace(/\D/g, ''))) {
+          errorMsg = 'Phone must be a 10-digit number';
         }
         break;
       case 'cardnumber':
@@ -122,12 +143,12 @@ function OrderOnline() {
     return errorMsg;
   };
 
-  const handleAddressChange = (e) => {
+  const handleCustomerChange = (e) => {
     const { name, value } = e.target;
     setOrder(prevOrder => ({
       ...prevOrder,
-      address: {
-        ...prevOrder.address,
+      customer: {
+        ...prevOrder.customer,
         [name]: value,
       },
     }));
@@ -136,7 +157,35 @@ function OrderOnline() {
       [name]: validateField(name, value),
     }));
   };
+//onchage explicitly for expiry date
+  const handleExpiryChange = (e) => {
+  let { value } = e.target;
 
+  // Remove all non-digit characters
+  value = value.replace(/\D/g, '');
+
+  // Format as MM/YY
+  if (value.length >= 3) {
+    value = value.slice(0, 2) + '/' + value.slice(2, 4);
+  }
+
+  // Update order state
+  setOrder(prevOrder => ({
+    ...prevOrder,
+    payment: {
+      ...prevOrder.payment,
+      expiry: value,
+    },
+  }));
+
+  // Validate the formatted value
+  setErrors(prevErrors => ({
+    ...prevErrors,
+    expiry: validateField('expiry', value),
+  }));
+};
+
+//onchange for all remaining payment fields
   const handlePaymentChange = (e) => {
     const { name, value } = e.target;
     setOrder(prevOrder => ({
@@ -150,6 +199,7 @@ function OrderOnline() {
       ...prevErrors,
       [name]: validateField(name, value),
     }));
+  
   };
 
   // Check if the submit button should be disabled
@@ -158,22 +208,22 @@ function OrderOnline() {
     const hasErrors = Object.values(errors).some(error => error !== '');
     // Check if any required field is empty
     const hasEmptyFields =
-      !order.address.street ||
-      !order.address.city ||
-      !order.address.zip ||
+      !order.customer.name ||
+      !order.customer.email ||
+      !order.customer.phone ||
       !order.payment.cardnumber ||
       !order.payment.expiry ||
       !order.payment.cvv;
-    return hasErrors || hasEmptyFields;
+    return hasErrors || hasEmptyFields || isSubmitting;
   };
 
-  const handleSubmitOrder = (e) => {
+  const handleSubmitOrder = async (e) => {
     e.preventDefault();
     // Validate all fields
     const newErrors = {
-      street: validateField('street', order.address.street),
-      city: validateField('city', order.address.city),
-      zip: validateField('zip', order.address.zip),
+      name: validateField('name', order.customer.name),
+      email: validateField('email', order.customer.email),
+      phone: validateField('phone', order.customer.phone),
       cardnumber: validateField('cardnumber', order.payment.cardnumber),
       expiry: validateField('expiry', order.payment.expiry),
       cvv: validateField('cvv', order.payment.cvv),
@@ -186,20 +236,75 @@ function OrderOnline() {
       return;
     }
 
-    console.log('Order submitted:', order);
-    setIsOrderSubmitted(true);
-    setOrder({
-      items: [],
-      address: { street: '', city: '', zip: '' },
-      payment: { cardnumber: '', expiry: '', cvv: '' },
-    });
-    setTimeout(() => {
-      setIsOrderSubmitted(false);
-    }, 5000);
-    setShowAddressForm(false);
-  };
+    // Order submission logic
+    setIsSubmitting(true);
 
+    const orderPayload = {
+      customerName: order.customer.name,
+      customerEmail: order.customer.email,
+      customerPhone: order.customer.phone,
+      cardNumber: order.payment.cardnumber,
+      expiryDate: order.payment.expiry,
+      cvv: order.payment.cvv,
+      totalAmount: totalPrice,
+      items: order.items.map(item => ({
+        itemName: item.name,
+        quantity: item.quantity,
+        price: item.price,
+      })),
+    };
+setIsLoading(true); // Start loading
+    try {
+      const response = await fetch(`${apiUrl}/api/orders`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderPayload),
+      });
+
+      if (!response.ok) throw new Error('Order submission failed');
+
+      const result = await response.json();
+
+      if (result.success && result.data) {
+        setSubmittedOrderId(result.data);
+        setIsOrderSubmitted(true);
+        setOrder({
+          items: [],
+          customer: { name: '', email: '', phone: '' },
+          payment: { cardnumber: '', expiry: '', cvv: '' },
+        });
+        setShowCustomerForm(false);
+        setTimeout(() => {
+          setIsOrderSubmitted(false);
+          setSubmittedOrderId(null);
+        }, 10000);
+       
+      } else {
+        throw new Error(result.message || 'An unknown error occurred.');
+      }
+    } catch (error) {
+      console.error('Error submitting order:', error);
+      alert(`There was an error submitting your order: ${error.message}`);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
+  };
   const totalPrice = order.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+  // Display loading or error states
+  if (loading) {
+    return <div className="menu-container"><h2>Loading menu...</h2></div>;
+  }
+
+  if (error) {
+    return <div className="menu-container"><h2 style={{ color: 'red' }}>{error}</h2></div>;
+  }
 
   return (
     <div className="flex h-screen">
@@ -234,7 +339,7 @@ function OrderOnline() {
                 >
                   <motion.img
                     loading="lazy"
-                    src={item.image}
+                    src={`/assets/images/${item.imageUrl}`}
                     alt={item.name}
                     className="w-full h-40 object-cover rounded"
                     initial={{ opacity: 0 }}
@@ -271,15 +376,22 @@ function OrderOnline() {
       <div className={`w-1/2 bg-white p-4 ${order.items.length === 0 ? 'hidden' : 'block'} overflow-y-auto`}>
         <div ref={detailsRef} className="order-summary">
           <h3 className="text-2xl font-bold mb-4">Your Order</h3>
-          {isOrderSubmitted && (
+          {isOrderSubmitted && submittedOrderId && (
             <div className="thank-you-message">
-              Thank you for your order! Your order is submitted successfully and on the way!
+              Thank you! Your order #{submittedOrderId} has been submitted successfully! You will get notification on your phone and email for the same.
             </div>
           )}
 
+
+
           {order.items.length === 0 ? (
-            <p className="text-gray-600">Your order is empty.</p>
-          ) : (
+           <> <p className="text-gray-600">Your order is empty.  </p>
+             <button onClick={scrollToTop}>Go to menu</button>
+             </>       
+       
+
+              
+          )  : (
             <>
               <ul className="mb-4">
                 {order.items.map((item, index) => (
@@ -299,7 +411,7 @@ function OrderOnline() {
               </ul>
               <p className="text-lg font-semibold">Total: ${totalPrice.toFixed(2)}</p>
               <button
-                onClick={() => setShowAddressForm(true)}
+                onClick={() => setShowCustomerForm(true)}
                 className="mt-2 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
               >
                 Proceed to Checkout
@@ -308,48 +420,48 @@ function OrderOnline() {
           )}
         </div>
 
-        {showAddressForm && (
+        {showCustomerForm && (
           <div className="address-form mt-6">
-            <h3 className="text-xl font-bold mb-4">Delivery Address</h3>
+            <h3 className="text-xl font-bold mb-4">Customer Details</h3>
             <div className="space-y-4">
               <div>
-                <label htmlFor="street" className="block text-gray-700">Street:</label>
+                <label htmlFor="name" className="block text-gray-700">Name:</label>
                 <input
                   type="text"
-                  id="street"
-                  name="street"
-                  value={order.address.street}
-                  onChange={handleAddressChange}
-                  className={`w-full border rounded px-3 py-2 ${errors.street ? 'border-red-500' : ''}`}
+                  id="name"
+                  name="name"
+                  value={order.customer.name}
+                  onChange={handleCustomerChange}
+                  className={`w-full border rounded px-3 py-2 ${errors.name ? 'border-red-500' : ''}`}
                   required
                 />
-                {errors.street && <p className="text-red-500 text-sm mt-1">{errors.street}</p>}
+                {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
               </div>
               <div>
-                <label htmlFor="city" className="block text-gray-700">City:</label>
+                <label htmlFor="email" className="block text-gray-700">Email:</label>
                 <input
                   type="text"
-                  id="city"
-                  name="city"
-                  value={order.address.city}
-                  onChange={handleAddressChange}
-                  className={`w-full border rounded px-3 py-2 ${errors.city ? 'border-red-500' : ''}`}
+                  id="email"
+                  name="email"
+                  value={order.customer.email}
+                  onChange={handleCustomerChange}
+                  className={`w-full border rounded px-3 py-2 ${errors.email ? 'border-red-500' : ''}`}
                   required
                 />
-                {errors.city && <p className="text-red-500 text-sm mt-1">{errors.city}</p>}
+                {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
               </div>
               <div>
-                <label htmlFor="zip" className="block text-gray-700">Zip Code:</label>
+                <label htmlFor="phone" className="block text-gray-700">Phone Number:</label>
                 <input
                   type="text"
-                  id="zip"
-                  name="zip"
-                  value={order.address.zip}
-                  onChange={handleAddressChange}
-                  className={`w-full border rounded px-3 py-2 ${errors.zip ? 'border-red-500' : ''}`}
+                  id="phone"
+                  name="phone"
+                  value={order.customer.phone}
+                  onChange={handleCustomerChange}
+                  className={`w-full border rounded px-3 py-2 ${errors.phone ? 'border-red-500' : ''}`}
                   required
                 />
-                {errors.zip && <p className="text-red-500 text-sm mt-1">{errors.zip}</p>}
+                {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
               </div>
               <div>
                 <label htmlFor="cardnumber" className="block text-gray-700">Card Number:</label>
@@ -372,7 +484,7 @@ function OrderOnline() {
                   id="expiry"
                   name="expiry"
                   value={order.payment.expiry}
-                  onChange={handlePaymentChange}
+                  onChange={handleExpiryChange}
                   className={`w-full border rounded px-3 py-2 ${errors.expiry ? 'border-red-500' : ''}`}
                   placeholder="MM/YY"
                   required
@@ -398,7 +510,11 @@ function OrderOnline() {
                 className={`bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 ${isSubmitDisabled() ? 'opacity-50 cursor-not-allowed' : ''}`}
                 disabled={isSubmitDisabled()}
               >
-                Submit Order (Dummy Payment)
+                {isLoading ? (
+            <span className="spinner"></span>
+          ) : (
+            'Submit Order'
+          )}
               </button>
             </div>
           </div>

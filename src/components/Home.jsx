@@ -1,12 +1,12 @@
 import React from 'react';
-import './Home.css';
-import BackToTop from './BackToTop';
+import '../assets/css/Home.css';
+import BackToTop from '../shared/BackToTop';
 function Home() {
   return (<>
     <div className="home-container">
       <div className="video-section">
         <video autoPlay loop muted controls className="responsive-video">
-          <source src="foodvideo.mp4" type="video/mp4" />
+          <source src="assets/videos/foodvideo.mp4" type="video/mp4" />
           Your browser does not support the video tag.
         </video>
       </div>
@@ -17,7 +17,7 @@ function Home() {
       </div>
     </div>
     <div className="imgcontainer">
-      <img className="moving-image" loading="lazy" decoding="async" width="272" height="224" src="logo.jpg" alt="Moving Image" />
+      <img className="moving-image" loading="lazy" decoding="async" width="272" height="224" src="assets/images/logo.jpg" alt="Moving Image" />
 </div>
   
     </>
