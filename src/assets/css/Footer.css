@@ -1,0 +1,21 @@
+.footer-container {
+  background-color: #000000;
+  padding: 2rem 0;
+ 
+}
+
+.text-yellow {
+  color: #FFFF00;
+}
+
+.text-gray {
+  color: #D1D5DB; /* Equivalent to Tailwind's text-gray-300 for readability on black */
+}
+
+.footer-container .border-gray-800 {
+  border-color: #1F2937; /* Matches Tailwind's gray-800 */
+}
+
+.footer-container a:hover {
+  color: #FFFF00;
+}
